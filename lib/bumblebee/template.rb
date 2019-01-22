@@ -26,7 +26,7 @@ module Bumblebee
     def generate_csv(objects, options = {})
       objects = objects.is_a?(Hash) ? [objects] : Array(objects)
 
-      write_options = make_options(options).merge(write_headers: true)
+      write_options = options.merge(headers: headers, write_headers: true)
 
       CSV.generate(write_options) do |csv|
         objects.each do |object|
@@ -38,10 +38,10 @@ module Bumblebee
     end
 
     def parse_csv(string, options = {})
-      csv = CSV.new(string, make_options(options))
+      csv = CSV.new(string, options.merge(headers: true))
 
       # Drop the first record, it is the header record
-      csv.to_a[1..-1].map do |row|
+      csv.to_a.map do |row|
         # Build up a hash using the column one at a time
         extracted_hash = columns.inject({}) do |hash, column|
           hash.merge(column.csv_to_object(row))
@@ -49,12 +49,6 @@ module Bumblebee
 
         extracted_hash
       end
-    end
-
-    private
-
-    def make_options(options = {})
-      options.merge(headers: headers)
     end
   end
 end

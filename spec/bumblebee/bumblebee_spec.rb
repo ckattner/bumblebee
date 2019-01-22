@@ -18,6 +18,13 @@ describe ::Bumblebee do
     ]
   end
 
+  let(:reverse_columns) do
+    [
+      { field: :dob },
+      { field: :name }
+    ]
+  end
+
   let(:people) do
     [
       { name: 'Matt', dob: '1901-01-03' },
@@ -47,6 +54,12 @@ describe ::Bumblebee do
 
   it 'should parse a csv' do
     objects = ::Bumblebee.parse_csv(columns, csv)
+
+    expect(objects).to eq(people)
+  end
+
+  it 'should parse a csv with columns in different order than headers' do
+    objects = ::Bumblebee.parse_csv(reverse_columns, csv)
 
     expect(objects).to eq(people)
   end
