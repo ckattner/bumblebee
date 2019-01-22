@@ -37,7 +37,7 @@ describe ::Bumblebee do
   let(:quoted_csv) { "\"name\",\"dob\"\n\"Matt\",\"1901-01-03\"\n\"Nathan\",\"1931-09-03\"\n" }
 
   it 'should generate a csv' do
-    actual = ::Bumblebee.generate_csv(columns, people)
+    actual = Bumblebee.generate_csv(columns, people)
 
     expect(actual).to eq(csv)
   end
@@ -53,7 +53,7 @@ describe ::Bumblebee do
   end
 
   it 'should parse a csv' do
-    objects = ::Bumblebee.parse_csv(columns, csv)
+    objects = Bumblebee.parse_csv(columns, csv)
 
     expect(objects).to eq(people)
   end
@@ -62,5 +62,39 @@ describe ::Bumblebee do
     objects = ::Bumblebee.parse_csv(reverse_columns, csv)
 
     expect(objects).to eq(people)
+  end
+
+  describe 'README examples' do
+    let(:columns) do
+      [
+        { field: :id },
+        { field: :name },
+        { field: :dob },
+        { field: :phone }
+      ]
+    end
+
+    let(:data) do
+      path = File.expand_path('fixtures/simple_readme_example.csv', __dir__)
+
+      # Excel adds a Byte Order Mark to the beginning of the file. Let Ruby
+      # know about this so that the first 'id' column is correctly parsed.
+      # More info about the Excel Byte Order Mark and Ruby is available at:
+      # https://estl.tech/of-ruby-and-hidden-csv-characters-ef482c679b35 .
+      file = File.open(path, 'r:bom|utf-8')
+      file.read
+    end
+
+    let(:output) do
+      [
+        { id: '1', name: 'Matt', dob: '2/3/01',   phone: '555-555-5555' },
+        { id: '2', name: 'Nick', dob: '9/3/21',   phone: '444-444-4444' },
+        { id: '3', name: 'Sam',  dob: '12/12/32', phone: '333-333-3333' }
+      ]
+    end
+
+    specify 'the simple 1:1 example works as advertised' do
+      expect(Bumblebee.parse_csv(columns, data)).to eq output
+    end
   end
 end
