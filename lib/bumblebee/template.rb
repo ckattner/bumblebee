@@ -26,7 +26,9 @@ module Bumblebee
     def generate_csv(objects, options = {})
       objects = objects.is_a?(Hash) ? [objects] : Array(objects)
 
-      CSV.generate(make_options(options)) do |csv|
+      write_options = make_options(options).merge(write_headers: true)
+
+      CSV.generate(write_options) do |csv|
         objects.each do |object|
           row = columns.map { |column| column.object_to_csv(object) }
 
@@ -52,7 +54,7 @@ module Bumblebee
     private
 
     def make_options(options = {})
-      options.merge(headers: headers, write_headers: true)
+      options.merge(headers: headers)
     end
   end
 end

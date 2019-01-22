@@ -1,12 +1,10 @@
 language: ruby
 rvm:
-- 2.3.1
-- 2.3.7
+- 2.3.8
+- 2.4.5
+- 2.5.3
+- 2.6.0
 cache: bundler
 script:
 - bundle exec rubocop
 - bundle exec rspec
-notifications:
-  hipchat:
-    rooms:
-      secure: i6oRaPbul9by4YkFdGOROctO6Clgsn1Q5eTrHGn9SJeKtOtBm79ezCS3w0UBLKGcE1Cso3gMNUjzMmi/i2je9rUUIZFXUaT3COyh1LLHlPU4y6j3ZQReWb/m43AEKL0akW6eiAUnmddc96WyTL6x5zplqHKweZs/kHutAor36x+sPTNumHm5yM795HVFlmUqpLnJu3OAIEC+1EhIHxX6xG5lOveAQ7/8KnyIRJWFQI2sHwZUPyD2YM6o+kYzGTfiXixpuG7sbyN17+u3YuQc8kPWgXkk/5+VF7B0OIuEymm9rnnisGxIU0B3nrDESumdNnhbSMGrItgsmhssICZ1Dr1pa3uBr2CFT3ZbQszuQvPfq1Pavytw5+jTjAqqhq2DQCXQRZT16Mnu1eFvHyu9yWeqFECJGQ8ligDcsckvQe2GU432dAt6Dj6zEnL4CsOi/NhaGkfW+b1hnD2L9LjCV3TGoT1YHuBxP2gxd2mN7ihCaPtaXMwojhzmPClqbdxmu/v8aZv7nF9SiYzXOMG/Hj5/wtQA6dE64LufQIkn2XYxDWeh7pnjye1u0np9LHp0Qw0R8KT8uGm7kL6BRUaN2xynl6O13r8juRk2xDHGry6tse8+/zooOZkB84akZZunKGki9jh1APjza0tylTr0C139N1/VAyeB4cA+GFFRWxY=

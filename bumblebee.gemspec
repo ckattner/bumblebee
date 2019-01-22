@@ -20,7 +20,7 @@ Gem::Specification.new do |s|
   s.homepage    = 'https://github.com/bluemarblepayroll/bumblebee'
   s.license     = 'MIT'
 
-  s.required_ruby_version = '>= 2.3.1'
+  s.required_ruby_version = '>= 2.3.8'
 
   s.add_dependency('acts_as_hashable', '~>1.0')
 

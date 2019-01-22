@@ -8,6 +8,7 @@
 #
 
 require './spec/spec_helper'
+require 'stringio'
 
 describe ::Bumblebee do
   let(:columns) do

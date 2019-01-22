@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    bumblebee (1.0.0)
+    bumblebee (1.0.1)
       acts_as_hashable (~> 1.0)
 
 GEM
@@ -86,4 +86,4 @@ DEPENDENCIES
   rubocop (~> 0.59)
 
 BUNDLED WITH
-   1.17.1
+   1.17.2

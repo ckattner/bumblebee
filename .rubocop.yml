@@ -6,3 +6,6 @@ Metrics/BlockLength:
 
 Metrics/MethodLength:
   Max: 12
+
+AllCops:
+  TargetRubyVersion: 2.3
