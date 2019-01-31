@@ -24,7 +24,7 @@ describe ::Bumblebee::Column do
       name: 'Mattycakes',
       dob: '1921-01-02',
       pizza: 'Pepperoni',
-      license:  { id: '123456' }
+      license: { id: '123456' }
     }
   end
 
@@ -108,9 +108,9 @@ describe ::Bumblebee::Column do
       }
 
       column = ::Bumblebee::Column.new(
-        field:      'name',
-        header:     'First Name',
-        to_object:  'First'
+        field: 'name',
+        header: 'First Name',
+        to_object: 'First'
       )
 
       expect(column.csv_to_object(csv_row)).to eq(record)

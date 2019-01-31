@@ -1,3 +1,10 @@
+# 1.2.2 (January 31, 2019)
+
+Maintenance Update
+
+* Upgraded Rubocop
+* Updated README
+
 # 1.2.1 (January 22, 2019)
 
 * README enhancements.
