@@ -1,11 +1,20 @@
+env:
+  global:
+    - CC_TEST_REPORTER_ID=a14b1cf423f3f72a1d6aaceff4959c25793586e8ec14695d5f378864b75d705d
 language: ruby
 rvm:
-# Build on the latest stable of all supported Rubies (https://www.ruby-lang.org/en/downloads/):
-- 2.3.8
-- 2.4.5
-- 2.5.3
-- 2.6.0
+  # Build on the latest stable of all supported Rubies (https://www.ruby-lang.org/en/downloads/):
+  - 2.3.8
+  - 2.4.5
+  - 2.5.3
+  - 2.6.0
 cache: bundler
+before_script:
+  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+  - chmod +x ./cc-test-reporter
+  - ./cc-test-reporter before-build
 script:
-- bundle exec rubocop
-- bundle exec rspec
+  - bundle exec rubocop
+  - bundle exec rspec
+after_script:
+  - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT

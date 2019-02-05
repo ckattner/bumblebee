@@ -1,6 +1,6 @@
 # Bumblebee
 
-[![Build Status](https://travis-ci.org/bluemarblepayroll/bumblebee.svg?branch=master)](https://travis-ci.org/bluemarblepayroll/bumblebee)
+[![Gem Version](https://badge.fury.io/rb/bumblebee.svg)](https://badge.fury.io/rb/bumblebee) [![Build Status](https://travis-ci.org/bluemarblepayroll/bumblebee.svg?branch=master)](https://travis-ci.org/bluemarblepayroll/bumblebee) [![Maintainability](https://api.codeclimate.com/v1/badges/e56cf63628a6b12ad1aa/maintainability)](https://codeclimate.com/github/bluemarblepayroll/bumblebee/maintainability) [![Test Coverage](https://api.codeclimate.com/v1/badges/e56cf63628a6b12ad1aa/test_coverage)](https://codeclimate.com/github/bluemarblepayroll/bumblebee/test_coverage) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 Higher level languages, such as Ruby, make interacting with CSV (Comma Separated Values) files trivial. Even so, this library provides a very simple object/CSV mapper that allows you to fully interact with CSV's in a declarative way.  Locking in common patterns, even in higher level languages, is important in large codebases.  Using a library, such as this, will help ensure standardization around CSV interaction.
 
