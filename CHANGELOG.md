@@ -1,3 +1,7 @@
+# 2.0.1 (February 5th, 2019)
+
+* Updated acts_as_hashable Dependency
+
 # 2.0.0 (January 31, 2019)
 
 * Upgraded Rubocop
