@@ -24,7 +24,7 @@ module Bumblebee
       @field      = field
       @header     = make_header(header || field)
       @to_csv     = Array(to_csv || field)
-      @to_object  = Array(to_object || field)
+      @to_object  = Array(to_object || @header)
     end
 
     # Take a object and convert to a value.
@@ -45,20 +45,14 @@ module Bumblebee
     def csv_to_object(csv_hash)
       return nil unless csv_hash
 
-      value   = csv_hash[header]
-      pointer = hash = {}
+      value = csv_hash
 
-      to_object[0..-2].each do |f|
-        if f.is_a?(Proc)
-          value = f.call(value)
-        else
-          pointer = pointer[f] = {}
-        end
+      to_object.each do |f|
+        value = single_extract(value, f)
       end
 
-      pointer[to_object[-1]] = value
-
-      hash
+      hash = {}
+      hash.tap { hash[field] = value }
     end
 
     private

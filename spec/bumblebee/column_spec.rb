@@ -41,7 +41,7 @@ describe ::Bumblebee::Column do
       expect(column.field).to     eq(field)
       expect(column.header).to    eq(field.to_s)
       expect(column.to_csv).to    eq([field])
-      expect(column.to_object).to  eq([field])
+      expect(column.to_object).to  eq([field.to_s])
     end
 
     describe 'header computation' do
@@ -98,13 +98,13 @@ describe ::Bumblebee::Column do
       expect(column.csv_to_object(csv_row)).to eq(record)
     end
 
-    it 'should correctly extract the value using custom from_csv value' do
+    it 'should correctly extract the value using custom to_object value' do
       csv_row = {
-        'First Name' => 'Nathan'
+        'First' => 'Nathan'
       }
 
       record = {
-        'First' => 'Nathan'
+        'name' => 'Nathan'
       }
 
       column = ::Bumblebee::Column.new(
@@ -114,6 +114,32 @@ describe ::Bumblebee::Column do
       )
 
       expect(column.csv_to_object(csv_row)).to eq(record)
+    end
+
+    it 'should correctly extract the value using to_object with a proc' do
+      record = {
+        'name' => 'Nathan'
+      }
+
+      column = ::Bumblebee::Column.new(field: 'name', to_object: ->(o) { o['name'] })
+
+      expect(column.csv_to_object(record)).to eq(record)
+    end
+
+    it 'should correctly build up a nested hash' do
+      record = {
+        'name' => 'Nathan'
+      }
+
+      column = ::Bumblebee::Column.new(
+        field: :person,
+        to_object: [
+          'name',
+          ->(o) { { first: o } }
+        ]
+      )
+
+      expect(column.csv_to_object(record)).to eq(person: { first: record['name'] })
     end
   end
 

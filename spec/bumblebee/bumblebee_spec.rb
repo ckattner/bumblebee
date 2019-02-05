@@ -8,7 +8,6 @@
 #
 
 require './spec/spec_helper'
-require 'stringio'
 
 describe ::Bumblebee do
   let(:columns) do
@@ -65,36 +64,84 @@ describe ::Bumblebee do
   end
 
   describe 'README examples' do
-    let(:columns) do
-      [
-        { field: :id },
-        { field: :name },
-        { field: :dob },
-        { field: :phone }
-      ]
+    describe 'the simple 1:1 parsing example' do
+      let(:data) { fixture('simple_readme_example.csv') }
+
+      let(:columns) do
+        [
+          { field: 'id' },
+          { field: 'name' },
+          { field: 'dob' },
+          { field: 'phone' }
+        ]
+      end
+
+      let(:output) do
+        [
+          { 'id' => '1', 'name' => 'Matt', 'dob' => '2/3/01',   'phone' => '555-555-5555' },
+          { 'id' => '2', 'name' => 'Nick', 'dob' => '9/3/21',   'phone' => '444-444-4444' },
+          { 'id' => '3', 'name' => 'Sam',  'dob' => '12/12/32', 'phone' => '333-333-3333' }
+        ]
+      end
+
+      specify 'works as advertised' do
+        expect(Bumblebee.parse_csv(columns, data)).to eq output
+      end
     end
 
-    let(:data) do
-      path = File.expand_path('fixtures/simple_readme_example.csv', __dir__)
+    describe 'the custom parsing example' do
+      let(:data) { fixture('custom_readme_example.csv') }
 
-      # Excel adds a Byte Order Mark to the beginning of the file. Let Ruby
-      # know about this so that the first 'id' column is correctly parsed.
-      # More info about the Excel Byte Order Mark and Ruby is available at:
-      # https://estl.tech/of-ruby-and-hidden-csv-characters-ef482c679b35 .
-      file = File.open(path, 'r:bom|utf-8')
-      file.read
-    end
+      let(:columns) do
+        [
+          {
+            field: :id,
+            header: 'ID #',
+            to_object: ->(o) { o['ID #'].to_i }
+          },
+          {
+            field: :name,
+            header: 'First Name',
+            to_csv: %i[name first],
+            to_object: ->(o) { { first: o['First Name'] } }
+          },
+          { field: :demo,
+            header: 'Date of Birth',
+            to_csv: %i[demo dob],
+            to_object: ->(o) { { dob: o['Date of Birth'] } } },
+          { field: :contact,
+            header: 'Phone #',
+            to_csv: %i[contact phone],
+            to_object: ->(o) { { phone: o['Phone #'] } } }
+        ]
+      end
 
-    let(:output) do
-      [
-        { id: '1', name: 'Matt', dob: '2/3/01',   phone: '555-555-5555' },
-        { id: '2', name: 'Nick', dob: '9/3/21',   phone: '444-444-4444' },
-        { id: '3', name: 'Sam',  dob: '12/12/32', phone: '333-333-3333' }
-      ]
-    end
+      let(:output) do
+        [
+          {
+            id: 1,
+            name: { first: 'Matt' },
+            demo: { dob: '1901-02-03' },
+            contact: { phone: '555-555-5555' }
+          },
+          {
+            id: 2,
+            name: { first: 'Nick' },
+            demo: { dob: '1921-09-03' },
+            contact: { phone: '444-444-4444' }
+          },
+          {
+            id: 3,
+            name: { first: 'Sam' },
+            demo: { dob: '1932-12-12' },
+            contact: { phone: '333-333-3333' }
+          }
+        ]
+      end
 
-    specify 'the simple 1:1 example works as advertised' do
-      expect(Bumblebee.parse_csv(columns, data)).to eq output
+      specify 'works as advertised' do
+        expect(Bumblebee.parse_csv(columns, data)).to eq output
+      end
     end
   end
 end

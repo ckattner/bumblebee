@@ -4,8 +4,6 @@
 
 Higher level languages, such as Ruby, make interacting with CSV (Comma Separated Values) files trivial. Even so, this library provides a very simple object/CSV mapper that allows you to fully interact with CSV's in a declarative way.  Locking in common patterns, even in higher level languages, is important in large codebases.  Using a library, such as this, will help ensure standardization around CSV interaction.
 
-However, there are situations where this level of abstraciton may not be appropriate.  For example, this library is not meant to be extremely performant given large files and/or datasets.  This library shines with CSV and/or data-sets of less than 100,000 records (approx).
-
 ## Installation
 
 To install through Rubygems:
@@ -136,7 +134,7 @@ csv = Bumblebee.generate_csv(columns, objects)
 
 The above columns config would work both ways, so if we received the CSV, we could parse it to an array of nested hashes.  Unfortunately, for now, we cannot do better than an array of nested hashes.
 
-### Custom Formatting
+### Custom To CSV Formatting
 
 You can also pass in functions that can do the value formatting.  For example:
 
@@ -165,6 +163,77 @@ columns = [
 ````
 
 would ensure the CSV has only upper-case `First Name` values.
+
+### Custom To Object Formatting
+
+You can also choose a custom method how the CSV's value is parsed just like you can customize how values are set for a CSV.  This helps function as an intermediate extractor/formatter/converter, in theory, should be able to give you alot more custom control over the parsing.
+
+A previous example above showed a custom nested object-to-csv flow.  This time, let's go csv-to-object with this dataset:
+
+ID # | First Name | Date of Birth | Phone #
+---- | ---------- | ------------- | ------------
+1    | Matt       | 1901-02-03    | 555-555-5555
+2    | Nick       | 1921-09-03    | 444-444-4444
+3    | Sam        | 1932-12-12    | 333-333-3333
+
+Using the following column config:
+
+````ruby
+columns = [
+  {
+    field: :id,
+    header: 'ID #',
+    to_object: ->(o) { o['ID #'].to_i }
+  },
+  {
+    field: :name,
+    header: 'First Name',
+    to_csv: %i[name first],
+    to_object: ->(o) { { first: o['First Name'] } }
+  },
+  { field: :demo,
+    header: 'Date of Birth',
+    to_csv: %i[demo dob],
+    to_object: ->(o) { { dob: o['Date of Birth'] } }
+  },
+  { field: :contact,
+    header: 'Phone #',
+    to_csv: %i[contact phone],
+    to_object: ->(o) { { phone: o['Phone #'] } }
+  }
+]
+````
+
+Executing the following:
+
+````ruby
+objects = Bumblebee.parse_csv(columns, data)
+````
+
+Would give us the following:
+
+````ruby
+objects = [
+  {
+    id: 1,
+    name: { first: 'Matt' },
+    demo: { dob: '1901-02-03' },
+    contact: { phone: '555-555-5555' }
+  },
+  {
+    id: 2,
+    name: { first: 'Nick' },
+    demo: { dob: '1921-09-03' },
+    contact: { phone: '444-444-4444' }
+  },
+  {
+    id: 3,
+    name: { first: 'Sam' },
+    demo: { dob: '1932-12-12' },
+    contact: { phone: '333-333-3333' }
+  }
+]
+````
 
 #### Further CSV Customization
 

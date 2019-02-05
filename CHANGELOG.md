@@ -1,9 +1,9 @@
-# 1.2.2 (January 31, 2019)
-
-Maintenance Update
+# 2.0.0 (January 31, 2019)
 
 * Upgraded Rubocop
 * Updated README
+* Hooked up CodeClimate / Test Coverage
+* Changed internal implementation of Column#csv_to_object.  This is a breaking change that reverse's the flow of assignment: When a column is parsed and value is extracted, it will iterate over the to_object values one by one, chaining the previous value with the next.  Once it is complete, it assigns the value to the field.
 
 # 1.2.1 (January 22, 2019)
 
