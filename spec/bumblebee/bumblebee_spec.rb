@@ -35,8 +35,18 @@ describe ::Bumblebee do
 
   let(:quoted_csv) { "\"name\",\"dob\"\n\"Matt\",\"1901-01-03\"\n\"Nathan\",\"1931-09-03\"\n" }
 
-  it 'should generate a csv' do
+  it 'should generate a csv using column argument' do
     actual = Bumblebee.generate_csv(columns, people)
+
+    expect(actual).to eq(csv)
+  end
+
+  it 'should generate a csv using block' do
+    actual = Bumblebee.generate_csv(people) do |t|
+      columns.each do |column|
+        t.column column[:field]
+      end
+    end
 
     expect(actual).to eq(csv)
   end
@@ -51,8 +61,18 @@ describe ::Bumblebee do
     expect(actual).to eq(quoted_csv)
   end
 
-  it 'should parse a csv' do
+  it 'should parse a csv using columns argument' do
     objects = Bumblebee.parse_csv(columns, csv)
+
+    expect(objects).to eq(people)
+  end
+
+  it 'should parse a csv using columns block' do
+    objects = Bumblebee.parse_csv(csv) do |t|
+      columns.each do |column|
+        t.column column[:field]
+      end
+    end
 
     expect(objects).to eq(people)
   end

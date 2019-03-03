@@ -14,8 +14,22 @@ module Bumblebee
   class Template
     attr_reader :columns
 
-    def initialize(columns = [])
+    def initialize(columns = [], &block)
       @columns = ::Bumblebee::Column.array(columns)
+
+      return unless block_given?
+
+      if block.arity == 1
+        yield self
+      else
+        instance_eval(&block)
+      end
+    end
+
+    # New DSL method to use for adding columns
+    def column(field, opts = {})
+      @columns << ::Bumblebee::Column.make(opts.merge(field: field))
+      self
     end
 
     # Return array of strings (headers)

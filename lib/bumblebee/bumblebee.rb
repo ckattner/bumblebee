@@ -19,12 +19,56 @@ require_relative 'template'
 # procedural way using these.
 module Bumblebee
   class << self
-    def generate_csv(columns, objects, options = {})
-      ::Bumblebee::Template.new(columns).generate_csv(objects, options)
+    # Two signatures for consumption:
+    #
+    # ::Bumblebee.generate_csv(columns = [], objects = [], options = {})
+    #
+    # or
+    #
+    # ::Bumblebee.generate_csv(objects = [], options = {}) do |t|
+    #   t.column :id, header: 'ID #'
+    #   t.column :first, header: 'First Name'
+    # end
+    def generate_csv(*args, &block)
+      if block_given?
+        objects = args[0] || []
+        options = args[1] || {}
+      else
+        objects = args[1] || []
+        options = args[2] || {}
+      end
+
+      template(args, &block).generate_csv(objects, options)
     end
 
-    def parse_csv(columns, string, options = {})
-      ::Bumblebee::Template.new(columns).parse_csv(string, options)
+    # Two signatures for consumption:
+    #
+    # ::Bumblebee.parse_csv(columns = [], string = '', options = {})
+    #
+    # or
+    #
+    # ::Bumblebee.parse_csv(string = '', options = {}) do |t|
+    #   t.column :id, header: 'ID #'
+    #   t.column :first, header: 'First Name'
+    # end
+    def parse_csv(*args, &block)
+      if block_given?
+        string  = args[0] || ''
+        options = args[1] || {}
+      else
+        string  = args[1] || ''
+        options = args[2] || {}
+      end
+
+      template(args, &block).parse_csv(string, options)
+    end
+
+    private
+
+    def template(args, &block)
+      columns = block_given? ? [] : (args[0] || [])
+
+      ::Bumblebee::Template.new(columns, &block)
     end
   end
 end

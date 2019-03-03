@@ -244,6 +244,30 @@ The two main methods:
 
 also accept custom options that [Ruby's CSV::new](https://ruby-doc.org/stdlib-2.6/libdoc/csv/rdoc/CSV.html#method-c-new) accepts.  The only caveat is that Bumblebee needs headers for its mapping, so it overrides the header options.
 
+#### Template DSL
+
+You can choose to pass in a block for template/column specification if you would rather prefer a code-first approach over a configuration-first approach.  For example:
+
+````ruby
+csv = Bumblebee.generate_csv(objects) do |t|
+  t.column :id,    header: 'ID #',
+                   to_object: ->(o) { o['ID #'].to_i }
+
+  t.column :first, header: 'First Name',
+                   to_csv: %i[name first],
+                   to_object: ->(o) { { first: o['First Name'] } }
+end
+
+objects = Bumblebee.parse_csv(data) do |t|
+  t.column :id,    header: 'ID #',
+                   to_object: ->(o) { o['ID #'].to_i }
+
+  t.column :first, header: 'First Name',
+                   to_csv: %i[name first],
+                   to_object: ->(o) { { first: o['First Name'] } }
+end
+````
+
 ## Contributing
 
 ### Development Environment Configuration
