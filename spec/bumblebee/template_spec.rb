@@ -48,4 +48,25 @@ describe ::Bumblebee::Template do
       expect(template.columns.first.header).to eq(opts[:header])
     end
   end
+
+  describe 'subclassing' do
+    class PersonTemplate < ::Bumblebee::Template
+      column :id, header: 'ID #'
+    end
+
+    class CompletePersonTemplate < PersonTemplate
+      column :first, header: 'First Name'
+    end
+
+    it 'should use class-level declared columns in the correct parenting hierarchical order' do
+      template = CompletePersonTemplate.new
+
+      expect(template.columns.length).to eq(2)
+      expect(template.columns.first.field).to eq(:id)
+      expect(template.columns.first.header).to eq('ID #')
+
+      expect(template.columns.last.field).to eq(:first)
+      expect(template.columns.last.header).to eq('First Name')
+    end
+  end
 end

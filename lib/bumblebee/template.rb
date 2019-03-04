@@ -12,10 +12,28 @@ module Bumblebee
   # generate_csv: take in an array of objects and return a string (CSV contents)
   # parse_csv: take in a string and return an array of OpenStruct objects
   class Template
+    class << self
+      def columns
+        @columns ||= []
+      end
+
+      def column(field, opts = {})
+        columns << ::Bumblebee::Column.make(opts.merge(field: field))
+
+        self
+      end
+
+      def all_columns
+        ancestors.reverse_each.inject([]) do |arr, ancestor|
+          ancestor < ::Bumblebee::Template ? arr + ancestor.columns : arr
+        end
+      end
+    end
+
     attr_reader :columns
 
     def initialize(columns = [], &block)
-      @columns = ::Bumblebee::Column.array(columns)
+      @columns = self.class.all_columns + ::Bumblebee::Column.array(columns)
 
       return unless block_given?
 

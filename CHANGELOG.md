@@ -1,6 +1,6 @@
 # 2.1.0 (March 4th, 2019)
 
-* Added domain-specific language for configuring Column objects through Template.  This is optional and is backwards compatible.
+* Added two domain-specific language options for configuring Column objects through Template: subclass Template class or pass in block.  This is optional and is backwards compatible.
 
 # 2.0.1 (February 5th, 2019)
 

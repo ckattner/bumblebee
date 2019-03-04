@@ -246,7 +246,9 @@ also accept custom options that [Ruby's CSV::new](https://ruby-doc.org/stdlib-2.
 
 #### Template DSL
 
-You can choose to pass in a block for template/column specification if you would rather prefer a code-first approach over a configuration-first approach.  For example:
+You can choose to pass in a block for template/column specification if you would rather prefer a code-first approach over a configuration-first approach.
+
+##### Using Blocks
 
 ````ruby
 csv = Bumblebee.generate_csv(objects) do |t|
@@ -267,6 +269,8 @@ objects = Bumblebee.parse_csv(data) do |t|
                    to_object: ->(o) { { first: o['First Name'] } }
 end
 ````
+
+##### Interacting Directly With ::Bumblebee::Template
 
 You can also choose to interact/build templates directly instead of going through the top-level API:
 
@@ -292,6 +296,57 @@ csv = template.generate_csv(objects)
 
 objects = template.parse_csv(data)
 ````
+
+##### Subclassing ::Bumblebee::Template
+
+Another option is to subclass Template and declare your columns at the class-level:
+
+````ruby
+class PersonTemplate < Bumblebee::Template
+  column :id,    header: 'ID #',
+                 to_object: ->(o) { o['ID #'].to_i }
+
+  column :first, header: 'First Name',
+                 to_csv: %i[name first],
+                 to_object: ->(o) { { first: o['First Name'] } }
+end
+
+# Usage
+
+template  = PersonTemplate.new
+csv       = template.generate_csv(objects)
+objects   = template.parse_csv(data)
+````
+
+##### Column Precedence
+
+The preceding examples showed three ways to declare columns, and each is additive to the next (in the following order):
+
+1. Class level (parent-first)
+2. Argument level (passed into constructor)
+3. Block level
+
+To illustrate all three:
+
+````ruby
+class PersonTemplate < Bumblebee::Template # first
+  column :id,    header: 'ID #',
+                 to_object: ->(o) { o['ID #'].to_i }
+
+  column :first, header: 'First Name',
+                 to_csv: %i[name first],
+                 to_object: ->(o) { { first: o['First Name'] } }
+end
+
+# Usage
+
+template  = PersonTemplate.new({ field: :middle, header: 'Middle Name' }) do |t| # second
+  t.column :last, header: 'Last Name' # third
+end
+
+````
+
+When executed to generate a CSV, the columns would be (in order): ```ID #, First Name, Middle Name, Last Name.```
 
 ## Contributing
 
