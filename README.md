@@ -268,6 +268,31 @@ objects = Bumblebee.parse_csv(data) do |t|
 end
 ````
 
+You can also choose to interact/build templates directly instead of going through the top-level API:
+
+````ruby
+template = Bumblebee::Template.new(columns)
+
+# or
+
+template = Bumblebee::Template.new do |t|
+  t.column :id,    header: 'ID #',
+                   to_object: ->(o) { o['ID #'].to_i }
+
+  t.column :first, header: 'First Name',
+                   to_csv: %i[name first],
+                   to_object: ->(o) { { first: o['First Name'] } }
+end
+````
+
+Template class has the same top-level methods:
+
+````ruby
+csv = template.generate_csv(objects)
+
+objects = template.parse_csv(data)
+````
+
 ## Contributing
 
 ### Development Environment Configuration
