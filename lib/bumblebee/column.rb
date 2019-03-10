@@ -8,83 +8,61 @@
 #
 
 module Bumblebee
-  # This is main piece of logic that defines a column which can go from objects to csv cell values
-  # and csv rows to objects.
+  # This is main piece of logic that defines a column which can go
+  # from objects to csv cell values and csv rows to objects.
   class Column
-    acts_as_hashable
+    attr_reader :header,
+                :property,
+                :through,
+                :to_csv,
+                :to_object
 
-    attr_reader :field,
-                :to_object,
-                :header,
-                :to_csv
+    def initialize(
+      header,
+      property: nil,
+      through: [],
+      to_csv: nil,
+      to_object: nil
+    )
+      raise ArgumentError, 'header is required' if header.to_s.empty?
 
-    def initialize(field:, header: nil, to_csv: nil, to_object: nil)
-      raise ArgumentError, 'field is required' unless field
+      @header       = header.to_s
+      @property     = property || @header
+      @through      = Array(through)
+      @to_csv       = ::Bumblebee::Mutator.new(to_csv)
+      @to_object    = ::Bumblebee::Mutator.new(to_object)
 
-      @field      = field
-      @header     = make_header(header || field)
-      @to_csv     = Array(to_csv || field)
-      @to_object  = Array(to_object || @header)
+      freeze
     end
 
-    # Take a object and convert to a value.
-    def object_to_csv(object)
-      val = object
+    # Extract from object and set on hash
+    def csv_set(data_object, hash)
+      value = extract(traverse(data_object), property)
 
-      # Iterate over keys until we reach a nil or the end of keys.
-      to_csv.each do |f|
-        # short-circuit out of the extract method
-        return nil unless val
-
-        val = single_extract(val, f)
-      end
-
-      val
+      to_csv.set(hash, header, value)
     end
 
-    def csv_to_object(csv_hash)
-      return nil unless csv_hash
+    def object_set(csv_object, hash)
+      pointer = build(hash)
+      value   = csv_object[header]
 
-      value = csv_hash
+      to_object.set(pointer, property, value)
 
-      to_object.each do |f|
-        value = single_extract(value, f)
-      end
-
-      hash = {}
-      hash.tap { hash[field] = value }
+      hash
     end
 
     private
 
-    # Loop through all values, contcatenating their string equivalent with an underscore.
-    # Since we allow procs, but we want deterministic headers, we will simply transform
-    # theem to _proc_.  This is not perfect and could create naming clashes, but it really
-    # should not be.  You should really leave proc's out of header and field.
-    def make_header(value)
-      Array(value).map do |v|
-        if v.is_a?(Proc)
-          'proc'
-        else
-          v.to_s
-        end
-      end.join('_')
+    def traverse(object)
+      ::Bumblebee::ObjectInterface.traverse(object, through)
     end
 
-    # Take an object and attempt to extract a value from it.
-    # First, see if the key is a proc, if so, then delegate to the proc.
-    # Next, see if the object responds to the key, if so, then call it.
-    # Lastly, see if it responds to brackets, if so, then call the brackets method sending
-    # in the key.
-    # Finally if all else fails, return nil.
-    def single_extract(object, key)
-      if key.is_a?(Proc)
-        key.call(object)
-      elsif object.respond_to?(key)
-        object.send(key)
-      elsif object.respond_to?(:[])
-        object[key]
-      end
+    def extract(object, key)
+      ::Bumblebee::ObjectInterface.get(object, key)
+    end
+
+    def build(object)
+      ::Bumblebee::ObjectInterface.build(object, through)
     end
   end
 end

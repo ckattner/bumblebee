@@ -8,65 +8,180 @@
 #
 
 require 'spec_helper'
+require 'examples/person_template'
+require 'examples/simple_object'
 
 describe ::Bumblebee::Template do
-  let(:field) { :id }
-  let(:opts) { { header: 'ID #' } }
+  describe 'array/string-based columns and symbol based object keys' do
+    let(:data_objects) { yaml_fixture('simple', 'data.yml').map(&:symbolize_keys) }
 
-  context 'with a blank template' do
-    let(:template) { ::Bumblebee::Template.new }
+    let(:csv_file) { fixture('simple', 'data.csv') }
 
-    subject { template }
+    let(:columns) { yaml_fixture('simple', 'columns.yml') }
 
-    it '#column should add a column' do
-      subject.column(field, opts)
+    subject { ::Bumblebee::Template.new(columns: columns) }
 
-      expect(subject.columns.length).to eq(1)
-      expect(subject.columns.first.field).to eq(field)
-      expect(subject.columns.first.header).to eq(opts[:header])
+    specify '#generate_csv properly builds a CSV-formatted string' do
+      actual = subject.generate(data_objects)
+
+      expect(actual).to eq(csv_file)
+    end
+
+    specify '#parse_csv properly builds objects' do
+      actual = subject.parse(csv_file)
+
+      actual = actual.map(&:symbolize_keys)
+
+      expect(actual).to eq(data_objects)
     end
   end
 
-  describe '#initialize' do
-    specify 'that initialization accepts a block (with arity) for column creation' do
-      template = ::Bumblebee::Template.new do |t|
-        t.column field, opts
-      end
-
-      expect(template.columns.length).to eq(1)
-      expect(template.columns.first.field).to eq(field)
-      expect(template.columns.first.header).to eq(opts[:header])
+  describe 'array/string-based columns and OpenStruct objects' do
+    let(:data_objects) do
+      yaml_fixture('simple', 'data.yml').map { |h| OpenStruct.new(h.symbolize_keys) }
     end
 
-    specify 'that initialization accepts a block (without arity) for column creation' do
-      template = ::Bumblebee::Template.new do
-        column :id, header: 'ID #'
-      end
+    let(:csv_file) { fixture('simple', 'data.csv') }
 
-      expect(template.columns.length).to eq(1)
-      expect(template.columns.first.field).to eq(field)
-      expect(template.columns.first.header).to eq(opts[:header])
+    let(:columns) { yaml_fixture('simple', 'columns.yml') }
+
+    subject { ::Bumblebee::Template.new(columns: columns, object_class: OpenStruct) }
+
+    specify '#generate_csv properly builds a CSV-formatted string' do
+      actual = subject.generate(data_objects)
+
+      expect(actual).to eq(csv_file)
+    end
+
+    specify '#parse_csv properly builds objects' do
+      actual = subject.parse(csv_file)
+
+      expect(actual).to eq(data_objects)
     end
   end
 
-  describe 'subclassing' do
-    class PersonTemplate < ::Bumblebee::Template
-      column :id, header: 'ID #'
+  describe 'array/string-based columns and custom objects' do
+    let(:data_objects) do
+      yaml_fixture('simple', 'data.yml').map { |h| SimpleObject.new(h.symbolize_keys) }
     end
 
-    class CompletePersonTemplate < PersonTemplate
-      column :first, header: 'First Name'
+    let(:csv_file) { fixture('simple', 'data.csv') }
+
+    let(:columns) { yaml_fixture('simple', 'columns.yml') }
+
+    subject { ::Bumblebee::Template.new(columns: columns, object_class: SimpleObject) }
+
+    specify '#generate_csv properly builds a CSV-formatted string' do
+      actual = subject.generate(data_objects)
+
+      expect(actual).to eq(csv_file)
     end
 
-    it 'should use class-level declared columns in the correct parenting hierarchical order' do
-      template = CompletePersonTemplate.new
+    specify '#parse_csv properly builds objects' do
+      actual = subject.parse(csv_file)
 
-      expect(template.columns.length).to eq(2)
-      expect(template.columns.first.field).to eq(:id)
-      expect(template.columns.first.header).to eq('ID #')
+      expect(actual).to eq(data_objects)
+    end
+  end
 
-      expect(template.columns.last.field).to eq(:first)
-      expect(template.columns.last.header).to eq('First Name')
+  describe 'config-based columns' do
+    let(:data_objects) { yaml_fixture('registrations', 'data.yml') }
+
+    let(:csv_file) { fixture('registrations', 'data.csv') }
+
+    let(:columns) { yaml_fixture('registrations', 'columns.yml') }
+
+    subject { ::Bumblebee::Template.new(columns: columns) }
+
+    specify '#generate_csv properly builds a CSV-formatted string' do
+      actual = subject.generate(data_objects)
+
+      expect(actual).to eq(csv_file)
+    end
+
+    specify '#parse_csv properly builds objects' do
+      actual = subject.parse(csv_file)
+
+      expect(actual).to eq(data_objects)
+    end
+  end
+
+  describe 'block-based (with local context) columns' do
+    let(:data_objects) { yaml_fixture('registrations', 'data.yml') }
+
+    let(:csv_file) { fixture('registrations', 'data.csv') }
+
+    let(:columns) { yaml_fixture('registrations', 'columns.yml') }
+
+    subject do
+      ::Bumblebee::Template.new do |t|
+        columns.each do |header, opts|
+          t.column(header, opts)
+        end
+      end
+    end
+
+    specify '#generate_csv properly builds a CSV-formatted string' do
+      actual = subject.generate(data_objects)
+
+      expect(actual).to eq(csv_file)
+    end
+
+    specify '#parse_csv properly builds objects' do
+      actual = subject.parse(csv_file)
+
+      expect(actual).to eq(data_objects)
+    end
+  end
+
+  describe 'block-based (without local context) columns' do
+    let(:data_objects) { yaml_fixture('registrations', 'data.yml') }
+
+    let(:csv_file) { fixture('registrations', 'data.csv') }
+
+    subject do
+      ::Bumblebee::Template.new do
+        columns = yaml_fixture('registrations', 'columns.yml')
+        columns.each do |header, opts|
+          column(header, opts)
+        end
+      end
+    end
+
+    specify '#generate_csv properly builds a CSV-formatted string' do
+      actual = subject.generate(data_objects)
+
+      expect(actual).to eq(csv_file)
+    end
+
+    specify '#parse_csv properly builds objects' do
+      actual = subject.parse(csv_file)
+
+      expect(actual).to eq(data_objects)
+    end
+  end
+
+  describe 'class-based columns' do
+    let(:data_objects) { yaml_fixture('people', 'data.yml') }
+
+    let(:csv_file) { fixture('people', 'data.csv') }
+
+    subject { PersonTemplate.new }
+
+    specify '#generate_csv properly builds a CSV-formatted string' do
+      template = PersonTemplate.new
+
+      actual = template.generate(data_objects)
+
+      expect(actual).to eq(csv_file)
+    end
+
+    specify '#parse_csv properly builds objects' do
+      template = PersonTemplate.new
+
+      actual = template.parse(csv_file)
+
+      expect(actual).to eq(data_objects)
     end
   end
 end

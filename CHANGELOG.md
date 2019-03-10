@@ -1,3 +1,9 @@
+# 3.0.0 (March 7th, 2019)
+
+**Breaking Changes: Public API Re-Write**
+
+* Major lessons were learnt during the implementation of versions one and two.  Version three seeks to iron out the DSL to make it more intuitive and usable.  Therefore, the entire DSL has been re-written from the ground up with a whole new API.
+
 # 2.1.0 (March 4th, 2019)
 
 * Added two domain-specific language options for configuring Column objects through Template: subclass Template class or pass in block.  This is optional and is backwards compatible.

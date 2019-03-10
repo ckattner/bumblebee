@@ -1,0 +1,26 @@
+- id: 1
+  registration_date: 2018-01-02
+  plate: No1BBALL
+  person:
+    id: 2
+    first: Michael
+    middle: Jeffery
+    last: Jordan
+  car:
+    id: 3
+    make: Jeep
+    model: Wrangler
+    year: 2018
+- id: 4
+  registration_date: 2018-09-02
+  plate: No2BBALL
+  person:
+    id: 5
+    first: Scottie
+    middle: Maurice
+    last: Pippen
+  car:
+    id: 6
+    make: Toyota
+    model: Camry
+    year: 1999

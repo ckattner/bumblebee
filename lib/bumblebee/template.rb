@@ -10,30 +10,20 @@
 module Bumblebee
   # Wraps up columns and provides to main methods:
   # generate_csv: take in an array of objects and return a string (CSV contents)
-  # parse_csv: take in a string and return an array of OpenStruct objects
+  # parse_csv: take in a string and return an array of hashes
   class Template
-    class << self
-      def columns
-        @columns ||= []
-      end
+    extend Forwardable
+    extend ::Bumblebee::ColumnDsl
 
-      def column(field, opts = {})
-        columns << ::Bumblebee::Column.make(opts.merge(field: field))
+    def_delegators :column_set, :headers, :columns
 
-        self
-      end
+    attr_reader :object_class
 
-      def all_columns
-        ancestors.reverse_each.inject([]) do |arr, ancestor|
-          ancestor < ::Bumblebee::Template ? arr + ancestor.columns : arr
-        end
-      end
-    end
+    def initialize(columns: nil, object_class: Hash, &block)
+      @column_set   = ::Bumblebee::ColumnSet.new(self.class.all_columns)
+      @object_class = object_class
 
-    attr_reader :columns
-
-    def initialize(columns = [], &block)
-      @columns = self.class.all_columns + ::Bumblebee::Column.array(columns)
+      column_set.add(columns)
 
       return unless block_given?
 
@@ -44,43 +34,39 @@ module Bumblebee
       end
     end
 
-    # New DSL method to use for adding columns
-    def column(field, opts = {})
-      @columns << ::Bumblebee::Column.make(opts.merge(field: field))
+    def column(header, opts = {})
+      column_set.column(header, opts)
+
       self
     end
 
-    # Return array of strings (headers)
-    def headers
-      columns.map(&:header)
-    end
-
-    def generate_csv(objects, options = {})
+    def generate(objects, options = {})
       objects = objects.is_a?(Hash) ? [objects] : Array(objects)
 
       write_options = options.merge(headers: headers, write_headers: true)
 
       CSV.generate(write_options) do |csv|
         objects.each do |object|
-          row = columns.map { |column| column.object_to_csv(object) }
-
-          csv << row
+          csv << columns.each_with_object({}) do |column, hash|
+            column.csv_set(object, hash)
+          end
         end
       end
     end
 
-    def parse_csv(string, options = {})
+    def parse(string, options = {})
       csv = CSV.new(string, options.merge(headers: true))
 
-      # Drop the first record, it is the header record
       csv.to_a.map do |row|
         # Build up a hash using the column one at a time
-        extracted_hash = columns.inject({}) do |hash, column|
-          hash.merge(column.csv_to_object(row))
+        columns.each_with_object(object_class.new) do |column, object|
+          column.object_set(row, object)
         end
-
-        extracted_hash
       end
     end
+
+    private
+
+    attr_reader :column_set
   end
 end

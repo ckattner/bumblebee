@@ -1,0 +1,35 @@
+'ID #':
+  property: id
+  to_object: integer
+'Plate #':
+  property: plate
+Date:
+  property: registration_date
+  to_object: date
+'Person ID #':
+  property: id
+  through: person
+  to_object: integer
+First Name:
+  property: first
+  through: person
+Middle Name:
+  property: middle
+  through: person
+Last Name:
+  property: last
+  through: person
+'Car ID #':
+  property: id
+  through: car
+  to_object: integer
+Make:
+  property: make
+  through: car
+Model:
+  property: model
+  through: car
+Year:
+  property: year
+  through: car
+  to_object: integer

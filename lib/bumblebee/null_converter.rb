@@ -8,5 +8,10 @@
 #
 
 module Bumblebee
-  VERSION = '3.0.0'
+  # Base converter using the Null Object Pattern.  Use this when a custom converter is not needed.
+  class NullConverter
+    def convert(val)
+      val
+    end
+  end
 end

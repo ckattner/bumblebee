@@ -33,18 +33,13 @@ id | name | dob        | phone
 Using the following column configuration:
 
 ````ruby
-columns = [
-  { field: :id },
-  { field: :name },
-  { field: :dob },
-  { field: :phone }
-]
+columns = %i[id name dob phone]
 ````
 
 We could parse this data and turn it into hashes:
 
 ````ruby
-objects = Bumblebee.parse_csv(columns, data)
+objects = Bumblebee::Template.new(columns: columns).parse(data)
 ````
 
 Then `objects` is this array of hashes:
@@ -72,12 +67,12 @@ ID # | First Name | Date of Birth | Phone #
 Then we can explicitly map those as:
 
 ````ruby
-columns = [
-  { field: :id,     header: 'ID #' },
-  { field: :name,   header: 'First Name' },
-  { field: :dob,    header: 'Date of Birth' },
-  { field: :phone,  header: 'Phone #' }
-]
+columns = {
+  'ID #': { property: :id },
+  'First Name': { property: :name },
+  'Date of Birth': { property: :dob },
+  'Phone #': { property: :phone }
+}
 ````
 
 ### Nested Objects
@@ -118,129 +113,86 @@ ID # | First Name | Date of Birth | Phone #
 Using the following column config:
 
 ````ruby
-columns = [
-  { field: :id,                 header: 'ID #' },
-  { field: [:name, :first],     header: 'First Name' },
-  { field: [:demo, :dob],       header: 'Date of Birth' },
-  { field: [:contact, :phone],  header: 'Phone #' }
+columns = {
+  'ID #': {
+    property: :id
+  },
+  'First Name': {
+    property: :first,
+    through: :name
+  },
+  'Date of Birth': {
+    property: :dob,
+    through: :demo
+  },
+  'Phone #': {
+    property: :phone,
+    through: :contact
+  }
 ]
 ````
 
 And executing the following:
 
 ````ruby
-csv = Bumblebee.generate_csv(columns, objects)
+csv = Bumblebee::Template.new(columns: columns).generate(objects)
 ````
 
 The above columns config would work both ways, so if we received the CSV, we could parse it to an array of nested hashes.  Unfortunately, for now, we cannot do better than an array of nested hashes.
 
-### Custom To CSV Formatting
+### Custom  Formatting
 
-You can also pass in functions that can do the value formatting.  For example:
+You can also pass in built-in or custom functions that can do the value formatting.  For example:
 
 ````ruby
-columns = [
-  {
-    field: :id,
-    header: 'ID #'
+columns = {
+  'ID #': {
+    property: :id,
+    to_object: :integer
   },
-  {
-    field: :name,
-    header: 'First Name',
-    to_csv: [:name, :first, ->(o) { o.to_s.upcase }]
+  'First Name': {
+    property: :first,
+    through: :name,
+    to_csv: ->(v) { v.to_s.upcase }
   },
-  {
-    field: :dob,
-    header: 'Date of Birth',
-    to_csv: [:demo, :dob]
+  'Date of Birth': {
+    property: :dob,
+    through: :demo,
+    to_object: { type: :date, nullable: true }
   },
-  {
-    field: :phone,
-    header: 'Phone #',
-    to_csv: [:contact, :phone]
+  'Phone #': {
+    property: :phone,
+    through: :contact
   }
-]
+}
 ````
 
-would ensure the CSV has only upper-case `First Name` values.
+would ensure:
 
-### Custom To Object Formatting
+* id is an integer data type when parsed
+* the CSV has only upper-case `First Name` values
+* dob is a date data type when parsed
 
-You can also choose a custom method how the CSV's value is parsed just like you can customize how values are set for a CSV.  This helps function as an intermediate extractor/formatter/converter, in theory, should be able to give you alot more custom control over the parsing.
+Other formatting functions that can be used for to_object and/or to_csv:
 
-A previous example above showed a custom nested object-to-csv flow.  This time, let's go csv-to-object with this dataset:
-
-ID # | First Name | Date of Birth | Phone #
----- | ---------- | ------------- | ------------
-1    | Matt       | 1901-02-03    | 555-555-5555
-2    | Nick       | 1921-09-03    | 444-444-4444
-3    | Sam        | 1932-12-12    | 333-333-3333
-
-Using the following column config:
-
-````ruby
-columns = [
-  {
-    field: :id,
-    header: 'ID #',
-    to_object: ->(o) { o['ID #'].to_i }
-  },
-  {
-    field: :name,
-    header: 'First Name',
-    to_csv: %i[name first],
-    to_object: ->(o) { { first: o['First Name'] } }
-  },
-  { field: :demo,
-    header: 'Date of Birth',
-    to_csv: %i[demo dob],
-    to_object: ->(o) { { dob: o['Date of Birth'] } }
-  },
-  { field: :contact,
-    header: 'Phone #',
-    to_csv: %i[contact phone],
-    to_object: ->(o) { { phone: o['Phone #'] } }
-  }
-]
-````
-
-Executing the following:
-
-````ruby
-objects = Bumblebee.parse_csv(columns, data)
-````
-
-Would give us the following:
-
-````ruby
-objects = [
-  {
-    id: 1,
-    name: { first: 'Matt' },
-    demo: { dob: '1901-02-03' },
-    contact: { phone: '555-555-5555' }
-  },
-  {
-    id: 2,
-    name: { first: 'Nick' },
-    demo: { dob: '1921-09-03' },
-    contact: { phone: '444-444-4444' }
-  },
-  {
-    id: 3,
-    name: { first: 'Sam' },
-    demo: { dob: '1932-12-12' },
-    contact: { phone: '333-333-3333' }
-  }
-]
-````
+* bigdecimal: converts to BigDecimal (nullable, non-nullable default is 0)
+* boolean: converts to flexible boolean (nullable; non-nullable default is false).  1,t,true,y,yes all parse to true, 0,f,false,n,no all parse to false
+* date: converts to Date (nullable; non-nullable default is 1900-01-01)
+* integer: converts to Fixnum (nullable, non-nullable default is 0)
+* join: array is joined by separator option (defaults to comma)
+* float: converts to Float (nullable, non-nullable default is 0.0f)
+* function: custom lambda function (input is the resolved value, output of lambda will be used resolved value)
+* pluck_join: map the sub-property (sub_property option) then join them with separator (defaults to comma)
+* pluck_split: array is split by separator option (defaults to comma), then new object (object_class option) is created and sub-property (sub_property option) set.
+* split: array is split by separator option (defaults to comma)
+* string: calls to_s method on the value
 
 #### Further CSV Customization
 
 The two main methods:
 
-* generate_csv
-* parse_csv
+* Template#generate
+* Template#parse
 
 also accept custom options that [Ruby's CSV::new](https://ruby-doc.org/stdlib-2.6/libdoc/csv/rdoc/CSV.html#method-c-new) accepts.  The only caveat is that Bumblebee needs headers for its mapping, so it overrides the header options.
 
@@ -251,50 +203,23 @@ You can choose to pass in a block for template/column specification if you would
 ##### Using Blocks
 
 ````ruby
-csv = Bumblebee.generate_csv(objects) do |t|
-  t.column :id,    header: 'ID #',
-                   to_object: ->(o) { o['ID #'].to_i }
+csv = Bumblebee::Template.new do |t|
+  t.column 'ID #',        property: :id,
+                          to_object: :integer
 
-  t.column :first, header: 'First Name',
-                   to_csv: %i[name first],
-                   to_object: ->(o) { { first: o['First Name'] } }
-end
+  t.column 'First Name',  property: :first,
+                          through: :name,
+                          to_object: :pluck_split
+end.generate(objects)
 
-objects = Bumblebee.parse_csv(data) do |t|
-  t.column :id,    header: 'ID #',
-                   to_object: ->(o) { o['ID #'].to_i }
+objects = Bumblebee::Template.new do |t|
+  t.column 'ID #',        property: :id,
+                          to_object: :integer
 
-  t.column :first, header: 'First Name',
-                   to_csv: %i[name first],
-                   to_object: ->(o) { { first: o['First Name'] } }
-end
-````
-
-##### Interacting Directly With ::Bumblebee::Template
-
-You can also choose to interact/build templates directly instead of going through the top-level API:
-
-````ruby
-template = Bumblebee::Template.new(columns)
-
-# or
-
-template = Bumblebee::Template.new do |t|
-  t.column :id,    header: 'ID #',
-                   to_object: ->(o) { o['ID #'].to_i }
-
-  t.column :first, header: 'First Name',
-                   to_csv: %i[name first],
-                   to_object: ->(o) { { first: o['First Name'] } }
-end
-````
-
-Template class has the same top-level methods:
-
-````ruby
-csv = template.generate_csv(objects)
-
-objects = template.parse_csv(data)
+  t.column 'First Name',  property: :first,
+                          through: :name,
+                          to_object: :pluck_split
+end.parse(data)
 ````
 
 ##### Subclassing ::Bumblebee::Template
@@ -303,19 +228,19 @@ Another option is to subclass Template and declare your columns at the class-lev
 
 ````ruby
 class PersonTemplate < Bumblebee::Template
-  column :id,    header: 'ID #',
-                 to_object: ->(o) { o['ID #'].to_i }
+  column 'ID #',        property: :id,
+                        to_object: :integer
 
-  column :first, header: 'First Name',
-                 to_csv: %i[name first],
-                 to_object: ->(o) { { first: o['First Name'] } }
+  column 'First Name',  property: :first,
+                        through: :name,
+                        to_object: :pluck_split
 end
 
 # Usage
 
 template  = PersonTemplate.new
-csv       = template.generate_csv(objects)
-objects   = template.parse_csv(data)
+csv       = template.generate(objects)
+objects   = template.parse(data)
 ````
 
 ##### Column Precedence
@@ -330,18 +255,24 @@ To illustrate all three:
 
 ````ruby
 class PersonTemplate < Bumblebee::Template # first
-  column :id,    header: 'ID #',
-                 to_object: ->(o) { o['ID #'].to_i }
+  column 'ID #',        property: :id,
+                        to_object: :integer
 
-  column :first, header: 'First Name',
-                 to_csv: %i[name first],
-                 to_object: ->(o) { { first: o['First Name'] } }
+  column 'First Name',  property: :first,
+                        through: :name,
+                        to_object: :pluck_split
 end
 
 # Usage
 
-template  = PersonTemplate.new({ field: :middle, header: 'Middle Name' }) do |t| # second
-  t.column :last, header: 'Last Name' # third
+columns = {
+  'Middle Name': {
+    property: :middle
+  }
+}
+
+template  = PersonTemplate.new(columns: columns) do |t| # second
+  t.column 'Last Name', property: :last # third
 end
 
 ````

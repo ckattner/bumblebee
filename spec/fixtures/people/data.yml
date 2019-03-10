@@ -1,0 +1,46 @@
+- id: 1
+  demo:
+    first: Matt
+    last: Rizzo
+    address:
+      street1: 555 Happy Ln.
+      street2: Suite 208
+      city: Mukwongo
+      st: WI
+      zip: '12345'
+      current: true
+  contact:
+    home: 555-444-5555
+    fax: 555-444-5555
+    email: something@somewhere.org
+  smoker: false
+  balance: 124.53
+  visit_dates:
+    - 2018-03-02
+    - 2018-06-04
+  family_members:
+    - id: 3
+    - id: 4
+- id: 2
+  demo:
+    first: Katie
+    last: Bunny
+    address:
+      street1: 765 N. Hollywood Dr.
+      street2: Apt 3B
+      city: Bel Air
+      st: CA
+      zip: '99999'
+      current: false
+  contact:
+    home: 123-456-7890
+    fax: 098-765-4321
+    email: st@elsewhere.org
+  smoker: true
+  balance: -98.5
+  visit_dates:
+    - 2010-09-10
+    - 2018-03-04
+  family_members:
+    - id: 5
+    - id: 6

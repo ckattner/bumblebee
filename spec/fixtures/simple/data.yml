@@ -1,0 +1,12 @@
+- id: '1'
+  name: Matt
+  dob: '1901-02-03'
+  phone: 555-555-5555
+- id: '2'
+  name: Nick
+  dob: '1921-09-03'
+  phone: 444-444-4444
+- id: '3'
+  name: Sam
+  dob: '1932-12-12'
+  phone: 333-333-3333
