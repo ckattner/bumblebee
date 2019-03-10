@@ -79,9 +79,9 @@ module Bumblebee
     end
 
     def process_boolean(val)
-      if nullable? && (null_or_empty?(val) || reads_null?(val))
+      if nullable? && nully?(val)
         nil
-      elsif val == true || reads_true?(val)
+      elsif truthy?(val)
         true
       else
         false
@@ -96,12 +96,12 @@ module Bumblebee
       val.nil? || val.to_s.empty?
     end
 
-    def reads_null?(val)
-      val.to_s =~ /(nil|null)$/i
+    def nully?(val)
+      null_or_empty?(val) || val.to_s =~ /(nil|null)$/i
     end
 
-    def reads_true?(val)
-      val.to_s =~ /(true|t|yes|y|1)$/i
+    def truthy?(val)
+      val == true || val.to_s =~ /(true|t|yes|y|1)$/i
     end
   end
 end
