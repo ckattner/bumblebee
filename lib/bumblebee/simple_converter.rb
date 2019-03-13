@@ -96,6 +96,8 @@ module Bumblebee
       val.nil? || val.to_s.empty?
     end
 
+    # rubocop:disable Style/DoubleNegation
+
     def nully?(val)
       null_or_empty?(val) || !!(val.to_s =~ /(nil|null)$/i)
     end
@@ -103,5 +105,7 @@ module Bumblebee
     def truthy?(val)
       !!(val.to_s =~ /(true|t|yes|y|1)$/i)
     end
+
+    # rubocop:enable Style/DoubleNegation
   end
 end
