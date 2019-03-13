@@ -368,8 +368,6 @@ class PersonTemplate < Bumblebee::Template # first
                         to_object: :pluck_split
 end
 
-# Usage
-
 columns = {
   'Middle Name': {
     property: :middle
