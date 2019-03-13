@@ -97,11 +97,11 @@ module Bumblebee
     end
 
     def nully?(val)
-      null_or_empty?(val) || val.to_s =~ /(nil|null)$/i
+      null_or_empty?(val) || !!(val.to_s =~ /(nil|null)$/i)
     end
 
     def truthy?(val)
-      val == true || val.to_s =~ /(true|t|yes|y|1)$/i
+      !!(val.to_s =~ /(true|t|yes|y|1)$/i)
     end
   end
 end

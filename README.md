@@ -187,6 +187,115 @@ Other formatting functions that can be used for to_object and/or to_csv:
 * split: array is split by separator option (defaults to comma)
 * string: calls to_s method on the value
 
+### Pluck Join / Pluck Split Explained
+
+Pluck join and pluck split comes in handy when you have an array of objects and would like to:
+
+* map one value from each object and join it (in order to output in a CSV)
+* take a string value, split it, the map each value to a new object (in order to parse as objects)
+
+Take this input and configuration for example:
+
+````ruby
+objects = [
+  {
+    id: 1,
+    name:     { first: 'Matt' },
+    demo:     { dob: '1901-02-03' },
+    contact:  { phone: '555-555-5555' },
+    children: [ { id: 9, name: 'Spunky' }, { id: 10, name: 'Dunker' } ]
+  },
+  {
+    id: 2,
+    name:     { first: 'Nick' },
+    demo:     { dob: '1921-09-03' },
+    contact:  { phone: '444-444-4444' },
+    children: [ { id: 11, name: 'Bonzi' }, { id: 12, name: 'Buddy' } ]
+  },
+  {
+    id: 3,
+    name:     { first: 'Sam' },
+    demo:     { dob: '1932-12-12' },
+    contact:  { phone: '333-333-3333' }
+  }
+]
+
+columns = {
+  'ID #': {
+    property: :id,
+    to_object: :integer
+  },
+  'Children ID #s': {
+    property: :children,
+    to_csv: { type: :pluck_join, separator: ';', sub_property: :id },
+    to_object: { type: :pluck_split, separator: ';', sub_property: :id },
+  }
+}
+````
+
+Generating a CSV:
+
+````ruby
+csv = Bumblebee::Template.new(columns: columns).generate(objects)
+````
+
+would output:
+
+ID # | Children ID #s
+---- | --------------
+1    | 9;10
+2    | 11;12
+
+Parsing a CSV:
+
+````ruby
+objects = Bumblebee::Template.new(columns: columns).parse(csv)
+````
+
+would output:
+
+````ruby
+objects = [
+  {
+    id: 1,
+    children: [ { id: 9 }, { id: 10 } ]
+  },
+  {
+    id: 2,
+    children: [ { id: 11 }, { id: 12 } ]
+  },
+  {
+    id: 3
+  }
+]
+````
+
+### Parsing Into Custom Classes
+
+Hash is the default return type when parsing a CSV.  You can change this by providing a Hash-like class:
+
+````ruby
+objects = Bumblebee::Template.new(columns: columns, object_class: OpenStruct).parse(csv)
+````
+
+Objects will now be an array of OpenStruct objects instead of Hash objects.
+
+* Note: you must also specify this in pluck_split:
+
+````ruby
+columns = {
+  'ID #': {
+    property: :id,
+    to_object: :integer
+  },
+  'Children ID #s': {
+    property: :children,
+    to_csv: { type: :pluck_join, separator: ';', sub_property: :id },
+    to_object: { type: :pluck_split, separator: ';', sub_property: :id, object_class: OpenStruct },
+  }
+}
+````
+
 #### Further CSV Customization
 
 The two main methods:
@@ -208,8 +317,7 @@ csv = Bumblebee::Template.new do |t|
                           to_object: :integer
 
   t.column 'First Name',  property: :first,
-                          through: :name,
-                          to_object: :pluck_split
+                          through: :name
 end.generate(objects)
 
 objects = Bumblebee::Template.new do |t|
@@ -217,8 +325,7 @@ objects = Bumblebee::Template.new do |t|
                           to_object: :integer
 
   t.column 'First Name',  property: :first,
-                          through: :name,
-                          to_object: :pluck_split
+                          through: :name
 end.parse(data)
 ````
 
