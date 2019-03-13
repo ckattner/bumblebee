@@ -343,8 +343,6 @@ class PersonTemplate < Bumblebee::Template
                         to_object: :pluck_split
 end
 
-# Usage
-
 template  = PersonTemplate.new
 csv       = template.generate(objects)
 objects   = template.parse(data)
