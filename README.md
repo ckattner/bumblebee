@@ -68,10 +68,10 @@ Then we can explicitly map those as:
 
 ````ruby
 columns = {
-  'ID #': { property: :id },
-  'First Name': { property: :name },
-  'Date of Birth': { property: :dob },
-  'Phone #': { property: :phone }
+  'ID #' => :id },
+  'First Name' => :name,
+  'Date of Birth' => :dob,
+  'Phone #' => :phone
 }
 ````
 
@@ -114,9 +114,7 @@ Using the following column config:
 
 ````ruby
 columns = {
-  'ID #': {
-    property: :id
-  },
+  'ID #' => :id,
   'First Name': {
     property: :first,
     through: :name

@@ -18,7 +18,7 @@ module Bumblebee
     def process_pluck_join(val)
       raise ArgumentError, 'sub_property is required for a pluck_join' unless sub_property
 
-      Array(val).map { |h| per.convert(h.is_a?(Hash) ? h[sub_property] : nil) }
+      Array(val).map { |h| per.convert(::Bumblebee::ObjectInterface.get(h, sub_property)) }
                 .join(separator)
     end
 

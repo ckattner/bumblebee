@@ -1,8 +1,7 @@
 'ID #':
   property: id
   to_object: integer
-'Plate #':
-  property: plate
+'Plate #': plate
 Date:
   property: registration_date
   to_object: date

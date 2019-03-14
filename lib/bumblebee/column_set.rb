@@ -32,7 +32,7 @@ module Bumblebee
     end
 
     def column(header, opts = {})
-      column = ::Bumblebee::Column.new(header, opts.symbolize_keys)
+      column = ::Bumblebee::Column.new(header, normalize_opts(opts))
 
       column_hash[column.header] = column
 
@@ -57,7 +57,7 @@ module Bumblebee
 
     def add_header_column_hash(hash)
       hash.each_pair do |header, opts|
-        column = ::Bumblebee::Column.new(header, opts.symbolize_keys)
+        column = ::Bumblebee::Column.new(header, normalize_opts(opts))
 
         assign(column)
       end
@@ -78,6 +78,12 @@ module Bumblebee
 
       # Base case, use arg as the header
       column(arg)
+    end
+
+    # This is so we can support Header => Column Property direct assignment
+    # columns for simple object-to-csv directives
+    def normalize_opts(opts)
+      opts.is_a?(Hash) ? opts.symbolize_keys : { property: opts }
     end
   end
 end

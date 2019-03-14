@@ -1,3 +1,8 @@
+# 3.0.1 (March 14th, 2019)
+
+* Add support for the following column syntax: ```column 'ID #', :id```, ```column = { 'ID #' => :id }```.  If the second argument is not a hash, it will be converted to: ```{ property: value }```
+* pluck_join fix to correctly use ObjectInterface when extracting values.
+
 # 3.0.0 (March 7th, 2019)
 
 **Breaking Changes: Public API Re-Write**

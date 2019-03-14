@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    bumblebee (3.0.0)
+    bumblebee (3.0.1)
       acts_as_hashable (~> 1.0)
 
 GEM
