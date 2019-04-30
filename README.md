@@ -68,7 +68,7 @@ Then we can explicitly map those as:
 
 ````ruby
 columns = {
-  'ID #' => :id },
+  'ID #' => :id,
   'First Name' => :name,
   'Date of Birth' => :dob,
   'Phone #' => :phone
