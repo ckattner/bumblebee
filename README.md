@@ -136,7 +136,7 @@ And executing the following:
 csv = Bumblebee::Template.new(columns: columns).generate(objects)
 ````
 
-The above columns config would work both ways, so if we received the CSV, we could parse it to an array of nested hashes.  Unfortunately, for now, we cannot do better than an array of nested hashes.
+The above columns config would work both ways, so if we received the CSV, we could parse it to an array of nested hashes.
 
 ### Custom  Formatting
 
