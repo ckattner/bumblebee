@@ -278,7 +278,7 @@ objects = Bumblebee::Template.new(columns: columns, object_class: OpenStruct).pa
 
 Objects will now be an array of OpenStruct objects instead of Hash objects.
 
-* Note: you must also specify this in pluck_split:
+*Note:* you must also specify this in pluck_split:
 
 ````ruby
 columns = {
