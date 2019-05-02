@@ -46,13 +46,13 @@ Then `objects` is this array of hashes:
 
 ````ruby
 [
-  { id: '1', name: 'Matt', dob: '2/3/01',   phone: '555-555-5555' },
-  { id: '2', name: 'Nick', dob: '9/3/21',   phone: '444-444-4444' },
-  { id: '3', name: 'Sam',  dob: '12/12/32', phone: '333-333-3333' }
+  { id: '1', name: 'Matt', dob: '1901-02-03', phone: '555-555-5555' },
+  { id: '2', name: 'Nick', dob: '1921-09-03', phone: '444-444-4444' },
+  { id: '3', name: 'Sam',  dob: '1932-12-12', phone: '333-333-3333' }
 ]
 ````
 
-*Note: Data, in this case, would be the read CSV file contents in string format.*
+*Note: Data, in this case, would be the CSV file contents in string format.*
 
 ### Custom Headers
 
