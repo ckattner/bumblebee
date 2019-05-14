@@ -99,7 +99,7 @@ objects = [
     demo:     { dob: '1932-12-12' },
     contact:  { phone: '333-333-3333' }
   }
-]
+}
 ````
 
 We could create a flat-file CSV:
