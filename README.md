@@ -127,7 +127,7 @@ columns = {
     property: :phone,
     through: :contact
   }
-]
+}
 ````
 
 And executing the following:
