@@ -14,7 +14,7 @@ require 'forwardable'
 
 # Monkey-patching core libaries
 require_relative 'core_ext/hash'
-Hash.include ::Bumblebee::CoreExt::Hash
+Hash.include Bumblebee::CoreExt::Hash
 
 # Load library
 require_relative 'object_interface'

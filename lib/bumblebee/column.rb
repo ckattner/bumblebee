@@ -29,8 +29,8 @@ module Bumblebee
       @header       = header.to_s
       @property     = property || @header
       @through      = Array(through)
-      @to_csv       = ::Bumblebee::Mutator.new(to_csv)
-      @to_object    = ::Bumblebee::Mutator.new(to_object)
+      @to_csv       = Mutator.new(to_csv)
+      @to_object    = Mutator.new(to_object)
 
       freeze
     end
@@ -54,15 +54,15 @@ module Bumblebee
     private
 
     def traverse(object)
-      ::Bumblebee::ObjectInterface.traverse(object, through)
+      ObjectInterface.traverse(object, through)
     end
 
     def extract(object, key)
-      ::Bumblebee::ObjectInterface.get(object, key)
+      ObjectInterface.get(object, key)
     end
 
     def build(object)
-      ::Bumblebee::ObjectInterface.build(object, through)
+      ObjectInterface.build(object, through)
     end
   end
 end

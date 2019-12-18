@@ -91,7 +91,7 @@ module Bumblebee
     end
 
     def make_converter(arg = nil)
-      arg ? self.class.new(arg) : ::Bumblebee::NullConverter.new
+      arg ? self.class.new(arg) : NullConverter.new
     end
   end
 end

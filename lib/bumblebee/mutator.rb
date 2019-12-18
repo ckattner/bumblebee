@@ -14,20 +14,20 @@ module Bumblebee
     module Types
       IGNORE = :ignore
     end
-    include ::Bumblebee::Mutator::Types
+    include Mutator::Types
 
     attr_reader :converter, :type
 
     def initialize(arg)
       if arg.nil?
         @type = nil
-        @converter = ::Bumblebee::NullConverter.new
+        @converter = NullConverter.new
       elsif mutator?(arg)
-        @type = ::Bumblebee::Mutator::Types.const_get(arg.to_s.upcase.to_sym)
-        @converter = ::Bumblebee::NullConverter.new
+        @type = Mutator::Types.const_get(arg.to_s.upcase.to_sym)
+        @converter = NullConverter.new
       else
         @type = nil
-        @converter = ::Bumblebee::SimpleConverter.new(arg)
+        @converter = SimpleConverter.new(arg)
       end
 
       freeze
@@ -36,7 +36,7 @@ module Bumblebee
     def set(object, key, val)
       return object if ignore?
 
-      ::Bumblebee::ObjectInterface.set(object, key, converter.convert(val))
+      ObjectInterface.set(object, key, converter.convert(val))
     end
 
     private
@@ -48,7 +48,7 @@ module Bumblebee
     def mutator?(arg)
       return false unless arg.is_a?(String) || arg.is_a?(Symbol)
 
-      ::Bumblebee::Mutator::Types.constants.include?(arg.to_s.upcase.to_sym)
+      Mutator::Types.constants.include?(arg.to_s.upcase.to_sym)
     end
   end
 end

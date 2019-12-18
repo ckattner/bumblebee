@@ -13,14 +13,14 @@ module Bumblebee
   # parse_csv: take in a string and return an array of hashes
   class Template
     extend Forwardable
-    extend ::Bumblebee::ColumnDsl
+    extend ColumnDsl
 
     def_delegators :column_set, :headers, :columns
 
     attr_reader :object_class
 
     def initialize(columns: nil, object_class: Hash, &block)
-      @column_set   = ::Bumblebee::ColumnSet.new(self.class.all_columns)
+      @column_set   = ColumnSet.new(self.class.all_columns)
       @object_class = object_class
 
       column_set.add(columns)

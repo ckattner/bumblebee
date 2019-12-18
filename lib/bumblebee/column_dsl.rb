@@ -15,7 +15,7 @@ module Bumblebee
     def_delegators :column_set, :columns
 
     def column_set
-      @column_set ||= ::Bumblebee::ColumnSet.new
+      @column_set ||= ColumnSet.new
     end
 
     def column(header, opts = {})
@@ -26,8 +26,8 @@ module Bumblebee
 
     def all_column_sets
       # the reverse preserves the order of inheritance to go from parent -> child
-      ancestors.reverse_each.with_object(::Bumblebee::ColumnSet.new) do |ancestor, set|
-        ancestor < ::Bumblebee::Template ? set.add(ancestor.columns) : set
+      ancestors.reverse_each.with_object(ColumnSet.new) do |ancestor, set|
+        ancestor < Template ? set.add(ancestor.columns) : set
       end
     end
 

@@ -15,7 +15,7 @@ module Bumblebee
     extend Forwardable
 
     FACTORY_ADD_METHODS = [
-      [::Bumblebee::Column, :assign],
+      [Column, :assign],
       [Hash, :add_header_column_hash]
     ].freeze
 
@@ -32,7 +32,7 @@ module Bumblebee
     end
 
     def column(header, opts = {})
-      column = ::Bumblebee::Column.new(header, normalize_opts(opts))
+      column = Column.new(header, normalize_opts(opts))
 
       column_hash[column.header] = column
 
@@ -57,7 +57,7 @@ module Bumblebee
 
     def add_header_column_hash(hash)
       hash.each_pair do |header, opts|
-        column = ::Bumblebee::Column.new(header, normalize_opts(opts))
+        column = Column.new(header, normalize_opts(opts))
 
         assign(column)
       end
