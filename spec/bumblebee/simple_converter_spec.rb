@@ -10,11 +10,11 @@
 require 'spec_helper'
 require './spec/examples/converter_test_case'
 
-describe ::Bumblebee::SimpleConverter do
+describe Bumblebee::SimpleConverter do
   describe '#convert' do
     ConverterTestCase.all.each do |test_case|
       it "should convert: #{test_case.arg}" do
-        converter = ::Bumblebee::SimpleConverter.new(test_case.arg)
+        converter = Bumblebee::SimpleConverter.new(test_case.arg)
 
         test_case.convert_cases.each do |convert_case|
           input = convert_case.first

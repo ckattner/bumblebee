@@ -327,7 +327,7 @@ objects = Bumblebee::Template.new do |t|
 end.parse(data)
 ````
 
-##### Subclassing ::Bumblebee::Template
+##### Subclassing Bumblebee::Template
 
 Another option is to subclass Template and declare your columns at the class-level:
 

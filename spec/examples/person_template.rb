@@ -7,7 +7,7 @@
 # LICENSE file in the root directory of this source tree.
 #
 
-class PersonTemplate < ::Bumblebee::Template
+class PersonTemplate < Bumblebee::Template
   column 'ID #',            property: 'id',
                             to_object: :integer
 
