@@ -7,4 +7,22 @@
 # LICENSE file in the root directory of this source tree.
 #
 
-require_relative 'bumblebee/bumblebee'
+require 'bigdecimal'
+require 'csv'
+require 'date'
+require 'forwardable'
+require 'objectable'
+
+# Monkey-patching core libaries
+require_relative 'bumblebee/core_ext/hash'
+Hash.include Bumblebee::CoreExt::Hash
+
+# Load library
+require_relative 'bumblebee/mutator'
+require_relative 'bumblebee/null_converter'
+require_relative 'bumblebee/converter'
+require_relative 'bumblebee/simple_converter'
+require_relative 'bumblebee/column'
+require_relative 'bumblebee/column_set'
+require_relative 'bumblebee/column_dsl'
+require_relative 'bumblebee/template'
