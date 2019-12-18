@@ -53,6 +53,8 @@ module Bumblebee
         @object_class = Hash
       end
 
+      @resolver = Objectable.resolver
+
       freeze
     end
 
@@ -61,6 +63,8 @@ module Bumblebee
     end
 
     private
+
+    attr_reader :resolver
 
     def make_type(val)
       Types.const_get(val.to_s.upcase.to_sym)

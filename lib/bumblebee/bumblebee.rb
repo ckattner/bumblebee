@@ -11,13 +11,13 @@ require 'bigdecimal'
 require 'csv'
 require 'date'
 require 'forwardable'
+require 'objectable'
 
 # Monkey-patching core libaries
 require_relative 'core_ext/hash'
 Hash.include Bumblebee::CoreExt::Hash
 
 # Load library
-require_relative 'object_interface'
 require_relative 'mutator'
 require_relative 'null_converter'
 require_relative 'converter'

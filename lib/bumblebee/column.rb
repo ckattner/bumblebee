@@ -31,38 +31,32 @@ module Bumblebee
       @through      = Array(through)
       @to_csv       = Mutator.new(to_csv)
       @to_object    = Mutator.new(to_object)
+      @resolver     = Objectable.resolver
 
       freeze
     end
 
     # Extract from object and set on hash
     def csv_set(data_object, hash)
-      value = extract(traverse(data_object), property)
+      value = resolver.get(data_object, full_property)
 
       to_csv.set(hash, header, value)
     end
 
     def object_set(csv_object, hash)
-      pointer = build(hash)
-      value   = csv_object[header]
+      value = csv_object[header]
 
-      to_object.set(pointer, property, value)
+      to_object.set(hash, full_property, value)
 
       hash
     end
 
     private
 
-    def traverse(object)
-      ObjectInterface.traverse(object, through)
-    end
+    attr_reader :resolver
 
-    def extract(object, key)
-      ObjectInterface.get(object, key)
-    end
-
-    def build(object)
-      ObjectInterface.build(object, through)
+    def full_property
+      through + [property]
     end
   end
 end

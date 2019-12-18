@@ -3,11 +3,12 @@ PATH
   specs:
     bumblebee (3.0.1)
       acts_as_hashable (~> 1.0)
+      objectable (~> 1.0)
 
 GEM
   remote: https://rubygems.org/
   specs:
-    acts_as_hashable (1.0.5)
+    acts_as_hashable (1.1.0)
     ansi (1.5.0)
     ast (2.4.0)
     coderay (1.1.2)
@@ -41,6 +42,7 @@ GEM
     notiffany (0.1.1)
       nenv (~> 0.1)
       shellany (~> 0.0)
+    objectable (1.0.0)
     parallel (1.19.1)
     parser (2.6.5.0)
       ast (~> 2.4.0)
@@ -101,3 +103,6 @@ DEPENDENCIES
   rubocop (~> 0.76.0)
   simplecov (~> 0.17.0)
   simplecov-console (~> 0.5.0)
+
+BUNDLED WITH
+   1.17.2

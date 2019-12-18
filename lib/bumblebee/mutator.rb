@@ -19,14 +19,15 @@ module Bumblebee
     attr_reader :converter, :type
 
     def initialize(arg)
+      @type     = nil
+      @resolver = Objectable.resolver
+
       if arg.nil?
-        @type = nil
         @converter = NullConverter.new
       elsif mutator?(arg)
-        @type = Mutator::Types.const_get(arg.to_s.upcase.to_sym)
+        @type      = Mutator::Types.const_get(arg.to_s.upcase.to_sym)
         @converter = NullConverter.new
       else
-        @type = nil
         @converter = SimpleConverter.new(arg)
       end
 
@@ -36,10 +37,12 @@ module Bumblebee
     def set(object, key, val)
       return object if ignore?
 
-      ObjectInterface.set(object, key, converter.convert(val))
+      resolver.set(object, key, converter.convert(val))
     end
 
     private
+
+    attr_reader :resolver
 
     def ignore?
       type == IGNORE
@@ -48,7 +51,7 @@ module Bumblebee
     def mutator?(arg)
       return false unless arg.is_a?(String) || arg.is_a?(Symbol)
 
-      Mutator::Types.constants.include?(arg.to_s.upcase.to_sym)
+      Types.constants.include?(arg.to_s.upcase.to_sym)
     end
   end
 end

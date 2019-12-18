@@ -10,7 +10,7 @@
 module Bumblebee
   # Subclass of Converter that provides a simple implementation for each Type.
   class SimpleConverter < Converter
-    DEFAULT_DATE = '1900-01-01'
+    DEFAULT_DATE        = '1900-01-01'
     DEFAULT_BIG_DECIMAL = 0
 
     private
@@ -18,7 +18,7 @@ module Bumblebee
     def process_pluck_join(val)
       raise ArgumentError, 'sub_property is required for a pluck_join' unless sub_property
 
-      Array(val).map { |h| per.convert(ObjectInterface.get(h, sub_property)) }
+      Array(val).map { |h| per.convert(resolver.get(h, sub_property)) }
                 .join(separator)
     end
 
@@ -26,7 +26,7 @@ module Bumblebee
       raise ArgumentError, 'sub_property is required for a pluck_split' unless sub_property
 
       process_split(val).map do |v|
-        object_class.new.tap { |h| ObjectInterface.set(h, sub_property, v) }
+        object_class.new.tap { |h| resolver.set(h, sub_property, v) }
       end
     end
 
