@@ -10,6 +10,7 @@
 require 'stringio'
 require 'pry'
 require 'ostruct'
+require 'yaml'
 
 require 'simplecov'
 require 'simplecov-console'
@@ -44,7 +45,7 @@ end
 
 def manually_convert_csv_object(csv_object, columns)
   csv_object.map do |header, value|
-    column = ::Bumblebee::Column.new(header, columns[header].symbolize_keys)
+    column = Bumblebee::Column.new(header, columns[header].symbolize_keys)
 
     converted_value =
       if column.extractor.expect_array?
