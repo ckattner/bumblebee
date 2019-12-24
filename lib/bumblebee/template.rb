@@ -48,23 +48,17 @@ module Bumblebee
     ].to_set.freeze
 
     def generate(objects, options = {})
-      objects = objects.is_a?(Hash) ? [objects] : Array(objects)
-      options = (options || {}).symbolize_keys
-      bom     = options[BOM] || false
-      prefix  = bom ? UTF8_BOM : ''
+      objects = array(objects)
+      options = parse_options(options)
+      prefix  = options.bom ? UTF8_BOM : ''
 
-      prefix + CSV.generate(ruby_csv_options(options)) do |csv|
+      prefix + CSV.generate(options.ruby_csv_options) do |csv|
         objects.each do |object|
           csv << columns.each_with_object({}) do |column, hash|
             column.csv_set(object, hash)
           end
         end
       end
-    end
-
-    def ruby_csv_options(options)
-      options.merge(headers: headers, write_headers: true)
-             .reject { |k| CUSTOM_OPTIONS.include?(k) }
     end
 
     def parse(string, options = {})
@@ -82,6 +76,24 @@ module Bumblebee
 
     private
 
+    Options = Struct.new(:ruby_csv_options, :bom)
+
+    private_constant :Options
+
     attr_reader :column_set
+
+    def array(objects)
+      objects.is_a?(Hash) ? [objects] : Array(objects)
+    end
+
+    def parse_options(options)
+      options = (options || {}).symbolize_keys
+      bom     = options[BOM] || false
+
+      ruby_csv_options = options.merge(headers: headers, write_headers: true)
+                                .reject { |k| CUSTOM_OPTIONS.include?(k) }
+
+      Options.new(ruby_csv_options, bom)
+    end
   end
 end
