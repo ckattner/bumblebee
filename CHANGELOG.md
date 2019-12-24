@@ -1,3 +1,16 @@
+# 3.1.0-alpha (December 24th, 2019)
+
+Additions/Changes:
+
+* Added `Template#generate` option `bom` which will include the UTF-8 byte order mark.
+* Ensured `Template#parse` ignores UTF-8 byte order marks, if one is present.
+
+Internal:
+
+* Cleaned up release process (added Rake)
+* Removed internal attribute value resolution and replaced with [Objectable](https://github.com/bluemarblepayroll/objectable/tree/master/lib/objectable)
+* Updated development dependencies
+
 # 3.0.1 (March 14th, 2019)
 
 * Add support for the following column syntax: ```column 'ID #', :id```, ```column = { 'ID #' => :id }```.  If the second argument is not a hash, it will be converted to: ```{ property: value }```
