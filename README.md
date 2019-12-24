@@ -380,6 +380,17 @@ end
 
 When executed to generate a CSV, the columns would be (in order): ```ID #, First Name, Middle Name, Last Name.```
 
+## Encoding Support
+
+This library, currently, only supports UTF-8.  You can choose to force the inclusion the UTF-8 [byte order mark](https://en.wikipedia.org/wiki/Byte_order_mark), for example:
+
+```ruby
+csv = Bumblebee::Template.new(columns: columns).generate(objects, bom: true)
+# csv will now start with "\xEF\xBB\xBF"
+```
+
+UTF-8 byte order marks will also be ignored while parsing.
+
 ## Contributing
 
 ### Development Environment Configuration

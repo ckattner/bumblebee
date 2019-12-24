@@ -11,7 +11,7 @@ require 'spec_helper'
 require 'examples/person_template'
 require 'examples/simple_object'
 
-describe ::Bumblebee::Template do
+describe Bumblebee::Template do
   describe 'array/string-based columns and symbol based object keys' do
     let(:data_objects) { yaml_fixture('simple', 'data.yml').map(&:symbolize_keys) }
 
@@ -19,7 +19,7 @@ describe ::Bumblebee::Template do
 
     let(:columns) { yaml_fixture('simple', 'columns.yml') }
 
-    subject { ::Bumblebee::Template.new(columns: columns) }
+    subject { Bumblebee::Template.new(columns: columns) }
 
     specify '#generate_csv properly builds a CSV-formatted string' do
       actual = subject.generate(data_objects)
@@ -45,7 +45,7 @@ describe ::Bumblebee::Template do
 
     let(:columns) { yaml_fixture('simple', 'columns.yml') }
 
-    subject { ::Bumblebee::Template.new(columns: columns, object_class: OpenStruct) }
+    subject { Bumblebee::Template.new(columns: columns, object_class: OpenStruct) }
 
     specify '#generate_csv properly builds a CSV-formatted string' do
       actual = subject.generate(data_objects)
@@ -69,7 +69,7 @@ describe ::Bumblebee::Template do
 
     let(:columns) { yaml_fixture('simple', 'columns.yml') }
 
-    subject { ::Bumblebee::Template.new(columns: columns, object_class: SimpleObject) }
+    subject { Bumblebee::Template.new(columns: columns, object_class: SimpleObject) }
 
     specify '#generate_csv properly builds a CSV-formatted string' do
       actual = subject.generate(data_objects)
@@ -91,7 +91,7 @@ describe ::Bumblebee::Template do
 
     let(:columns) { yaml_fixture('registrations', 'columns.yml') }
 
-    subject { ::Bumblebee::Template.new(columns: columns) }
+    subject { Bumblebee::Template.new(columns: columns) }
 
     specify '#generate_csv properly builds a CSV-formatted string' do
       actual = subject.generate(data_objects)
@@ -114,7 +114,7 @@ describe ::Bumblebee::Template do
     let(:columns) { yaml_fixture('registrations', 'columns.yml') }
 
     subject do
-      ::Bumblebee::Template.new do |t|
+      Bumblebee::Template.new do |t|
         columns.each do |header, opts|
           t.column(header, opts)
         end
@@ -140,7 +140,7 @@ describe ::Bumblebee::Template do
     let(:csv_file) { fixture('registrations', 'data.csv') }
 
     subject do
-      ::Bumblebee::Template.new do
+      Bumblebee::Template.new do
         columns = yaml_fixture('registrations', 'columns.yml')
         columns.each do |header, opts|
           column(header, opts)
@@ -180,6 +180,32 @@ describe ::Bumblebee::Template do
       template = PersonTemplate.new
 
       actual = template.parse(csv_file)
+
+      expect(actual).to eq(data_objects)
+    end
+  end
+
+  describe 'UTF-8 Byte Order Mark (BOM) support' do
+    let(:data_objects) { yaml_fixture('simple', 'data.yml').map(&:symbolize_keys) }
+
+    let(:csv_file) { fixture('simple', 'data.csv') }
+
+    let(:columns) { yaml_fixture('simple', 'columns.yml') }
+
+    subject { Bumblebee::Template.new(columns: columns) }
+
+    specify '#generate_csv includes BOM' do
+      actual = subject.generate(data_objects, bom: true)
+
+      expect(actual).to start_with("\xEF\xBB\xBF")
+    end
+
+    specify '#parse excludes BOM' do
+      utf8_string_with_bom = "\xEF\xBB\xBF#{csv_file}"
+
+      expect(utf8_string_with_bom.encoding).to eq(Encoding::UTF_8)
+
+      actual = subject.parse(utf8_string_with_bom).map(&:symbolize_keys)
 
       expect(actual).to eq(data_objects)
     end

@@ -12,6 +12,7 @@ require 'csv'
 require 'date'
 require 'forwardable'
 require 'objectable'
+require 'set'
 
 # Monkey-patching core libaries
 require_relative 'bumblebee/core_ext/hash'

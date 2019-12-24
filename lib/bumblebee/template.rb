@@ -40,12 +40,20 @@ module Bumblebee
       self
     end
 
+    BOM      = :bom
+    UTF8_BOM = "\xEF\xBB\xBF"
+
+    CUSTOM_OPTIONS = [
+      BOM
+    ].to_set.freeze
+
     def generate(objects, options = {})
       objects = objects.is_a?(Hash) ? [objects] : Array(objects)
+      options = (options || {}).symbolize_keys
+      bom     = options[BOM] || false
+      prefix  = bom ? UTF8_BOM : ''
 
-      write_options = options.merge(headers: headers, write_headers: true)
-
-      CSV.generate(write_options) do |csv|
+      prefix + CSV.generate(ruby_csv_options(options)) do |csv|
         objects.each do |object|
           csv << columns.each_with_object({}) do |column, hash|
             column.csv_set(object, hash)
@@ -54,8 +62,15 @@ module Bumblebee
       end
     end
 
+    def ruby_csv_options(options)
+      options.merge(headers: headers, write_headers: true)
+             .reject { |k| CUSTOM_OPTIONS.include?(k) }
+    end
+
     def parse(string, options = {})
-      csv = CSV.new(string, options.merge(headers: true))
+      string_without_bom = string.sub(UTF8_BOM, '')
+
+      csv = CSV.new(string_without_bom, options.merge(headers: true))
 
       csv.to_a.map do |row|
         # Build up a hash using the column one at a time
