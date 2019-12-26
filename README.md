@@ -46,13 +46,13 @@ Then `objects` is this array of hashes:
 
 ````ruby
 [
-  { id: '1', name: 'Matt', dob: '2/3/01',   phone: '555-555-5555' },
-  { id: '2', name: 'Nick', dob: '9/3/21',   phone: '444-444-4444' },
-  { id: '3', name: 'Sam',  dob: '12/12/32', phone: '333-333-3333' }
+  { id: '1', name: 'Matt', dob: '1901-02-03', phone: '555-555-5555' },
+  { id: '2', name: 'Nick', dob: '1921-09-03', phone: '444-444-4444' },
+  { id: '3', name: 'Sam',  dob: '1932-12-12', phone: '333-333-3333' }
 ]
 ````
 
-*Note: Data, in this case, would be the read CSV file contents in string format.*
+*Note: Data, in this case, would be the CSV file contents in string format.*
 
 ### Custom Headers
 
@@ -99,7 +99,7 @@ objects = [
     demo:     { dob: '1932-12-12' },
     contact:  { phone: '333-333-3333' }
   }
-]
+}
 ````
 
 We could create a flat-file CSV:
@@ -127,7 +127,7 @@ columns = {
     property: :phone,
     through: :contact
   }
-]
+}
 ````
 
 And executing the following:
@@ -136,7 +136,7 @@ And executing the following:
 csv = Bumblebee::Template.new(columns: columns).generate(objects)
 ````
 
-The above columns config would work both ways, so if we received the CSV, we could parse it to an array of nested hashes.  Unfortunately, for now, we cannot do better than an array of nested hashes.
+The above columns config would work both ways, so if we received the CSV, we could parse it to an array of nested hashes.
 
 ### Custom  Formatting
 
@@ -278,7 +278,7 @@ objects = Bumblebee::Template.new(columns: columns, object_class: OpenStruct).pa
 
 Objects will now be an array of OpenStruct objects instead of Hash objects.
 
-* Note: you must also specify this in pluck_split:
+*Note:* you must also specify this in pluck_split:
 
 ````ruby
 columns = {
