@@ -8,5 +8,5 @@
 #
 
 module Bumblebee
-  VERSION = '3.1.0-alpha'
+  VERSION = '3.1.0'
 end

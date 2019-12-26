@@ -1,4 +1,4 @@
-# 3.1.0-alpha (December 24th, 2019)
+# 3.1.0 (December 26th, 2019)
 
 Additions/Changes:
 
