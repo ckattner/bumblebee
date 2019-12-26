@@ -14,22 +14,14 @@ module Bumblebee
     module Types
       IGNORE = :ignore
     end
-    include Mutator::Types
+    include Types
 
     attr_reader :converter, :type
 
     def initialize(arg)
-      @type     = nil
       @resolver = Objectable.resolver
-
-      if arg.nil?
-        @converter = NullConverter.new
-      elsif mutator?(arg)
-        @type      = Mutator::Types.const_get(arg.to_s.upcase.to_sym)
-        @converter = NullConverter.new
-      else
-        @converter = SimpleConverter.new(arg)
-      end
+      @converter = arg.nil? || mutator?(arg) ? NullConverter.new : SimpleConverter.new(arg)
+      @type      = mutator?(arg) ? Types.const_get(arg.to_s.upcase.to_sym) : nil
 
       freeze
     end
