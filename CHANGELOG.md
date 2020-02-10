@@ -1,3 +1,9 @@
+# 3.1.1 (February 10th, 2020)
+
+Fixes:
+
+* Headers that contained a period broke due to cleanup performed in 3.1.0 (replaced internal attribute resolution with Objectable.)
+
 # 3.1.0 (December 26th, 2019)
 
 Additions/Changes:

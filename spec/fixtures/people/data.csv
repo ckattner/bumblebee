@@ -1,3 +1,3 @@
-ID #,First Name,Last Name,Street 1,Street 2,City,State,Zipcode,Current,Home #,Fax #,Email Address,Smokes,Current Balance,Visits,Family Members,Email Address Domain
+ID #,First Name,Last Name,Street 1,Street 2,City,St.,Zipcode,Current,Home #,Fax #,Email Address,Smokes,Current Balance,Visits,Family Members,Email Address Domain
 1,Matt,Rizzo,555 Happy Ln.,Suite 208,Mukwongo,WI,12345,true,555-444-5555,555-444-5555,something@somewhere.org,false,124.53,2018-03-02;2018-06-04,"3,4",somewhere.org
 2,Katie,Bunny,765 N. Hollywood Dr.,Apt 3B,Bel Air,CA,99999,false,123-456-7890,098-765-4321,st@elsewhere.org,true,-98.5,2010-09-10;2018-03-04,"5,6",elsewhere.org

@@ -29,7 +29,11 @@ module Bumblebee
       @header       = header.to_s
       @property     = property || @header
       @through      = Array(through)
-      @to_csv       = Mutator.new(to_csv)
+
+      # We need to ensure the to_csv mutator is not splitting any keys because its hash has already
+      # been resolved where each key is the actual presentational value (csv header).
+      @to_csv = Mutator.new(to_csv, resolver: Objectable.resolver(separator: ''))
+
       @to_object    = Mutator.new(to_object)
       @resolver     = Objectable.resolver
 

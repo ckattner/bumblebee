@@ -18,8 +18,8 @@ module Bumblebee
 
     attr_reader :converter, :type
 
-    def initialize(arg)
-      @resolver = Objectable.resolver
+    def initialize(arg, resolver: Objectable.resolver)
+      @resolver  = resolver
       @converter = arg.nil? || mutator?(arg) ? NullConverter.new : SimpleConverter.new(arg)
       @type      = mutator?(arg) ? Types.const_get(arg.to_s.upcase.to_sym) : nil
 
