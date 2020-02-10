@@ -26,7 +26,7 @@ class PersonTemplate < Bumblebee::Template
   column 'City',            property: 'city',
                             through: %w[demo address]
 
-  column 'State',           property: 'st',
+  column 'St.',             property: 'st',
                             through: %w[demo address]
 
   column 'Zipcode',         property: 'zip',
